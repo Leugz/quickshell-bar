@@ -186,7 +186,7 @@ PopupWindow {
                     model: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
                     delegate: Text {
                         text: modelData
-                        color: Theme.cyan 
+                        color: index === new Date().getDay() ? Theme.maroon : Theme.cyan
                         font.family: Theme.fontFamily
                         font.pixelSize: 11
                         font.bold: true

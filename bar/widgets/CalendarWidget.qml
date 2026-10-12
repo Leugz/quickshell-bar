@@ -55,7 +55,7 @@ Item {
         id: popup
         target: root
         shown: root.popupOpen
-        viewDate: root.now
+        viewDate: Time.now
         
         onIsHoveredChanged: {
             if (isHovered) {

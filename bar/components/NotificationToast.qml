@@ -6,7 +6,7 @@ import "../"
 
 GlassPanel {
     id: root
-    required property var notification
+    property var notification
     
     width: 320
     implicitHeight: layout.implicitHeight + 24
