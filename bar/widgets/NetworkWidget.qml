@@ -1,14 +1,13 @@
-import QtQuick
-import Quickshell
 import "../"
 import "../services"
 import "../windows"
+import QtQuick
+import Quickshell
 
 Text {
     id: root
-    text: NetworkStatus.state === "wifi" ? ""
-        : NetworkStatus.state === "ethernet" ? "󰈀"
-        : "󰤭"
+
+    text: NetworkStatus.state === "wifi" ? "" : NetworkStatus.state === "ethernet" ? "󰈀" : "󰤭"
     color: NetworkStatus.state === "disconnected" ? Theme.surface2 : Theme.indigo
     font.family: Theme.fontFamilyAlt
     font.pixelSize: Theme.fontSize
@@ -20,13 +19,14 @@ Text {
         onClicked: Quickshell.execDetached(Config.networkCmd)
     }
 
-    HoverHandler { id: hoverHandler }
+    HoverHandler {
+        id: hoverHandler
+    }
 
     Tooltip {
         target: root
         shown: hoverHandler.hovered
-        text: NetworkStatus.state === "wifi" ? "Connected to " + NetworkStatus.connectionName
-            : NetworkStatus.state === "ethernet" ? "Connected (" + NetworkStatus.connectionName + ")"
-            : "Disconnected"
+        text: NetworkStatus.state === "wifi" ? "Connected to " + NetworkStatus.connectionName : NetworkStatus.state === "ethernet" ? "Connected (" + NetworkStatus.connectionName + ")" : "Disconnected"
     }
+
 }

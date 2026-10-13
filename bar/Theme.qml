@@ -1,5 +1,5 @@
-pragma Singleton
 import QtQuick
+pragma Singleton
 
 QtObject {
     readonly property color base: "#1e1e2e"
@@ -11,12 +11,10 @@ QtObject {
     readonly property color cyan: "#8fc4e0"
     readonly property color mauve: "#cba6f7"
     readonly property color maroon: "#b14d8d"
-
     readonly property string fontFamily: "SF Pro Display"
     readonly property string fontFamilyAlt: "Symbols Nerd Font"
     readonly property string launcherFont: "SF Mono"
     readonly property int fontSize: 14
-
     readonly property int barHeight: 37
     readonly property int barSpacing: 5
     readonly property int moduleRadius: 10

@@ -1,6 +1,6 @@
+import "../"
 import QtQuick
 import Quickshell
-import "../"
 
 PopupWindow {
     id: root
@@ -12,7 +12,6 @@ PopupWindow {
 
     visible: isEffectivelyShown || bg.opacity > 0
     color: "transparent"
-
     implicitWidth: bg.width
     implicitHeight: bg.height
 
@@ -26,13 +25,9 @@ PopupWindow {
     Rectangle {
         id: bg
 
-        opacity: root.isEffectivelyShown ? 1.0 : 0.0
-        scale: root.isEffectivelyShown ? 1.0 : 0.95
+        opacity: root.isEffectivelyShown ? 1 : 0
+        scale: root.isEffectivelyShown ? 1 : 0.95
         transformOrigin: Item.Top
-
-        Behavior on opacity { NumberAnimation { duration: 150 } }
-        Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
-
         width: label.implicitWidth + 16
         height: label.implicitHeight + 10
         radius: 6
@@ -42,12 +37,30 @@ PopupWindow {
 
         Text {
             id: label
+
             anchors.centerIn: parent
             text: root.text
             color: Theme.text
-            font.family: Theme.fontFamily 
+            font.family: Theme.fontFamily
             font.pixelSize: 12
             font.bold: true
         }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 150
+            }
+
+        }
+
+        Behavior on scale {
+            NumberAnimation {
+                duration: 150
+                easing.type: Easing.OutCubic
+            }
+
+        }
+
     }
+
 }

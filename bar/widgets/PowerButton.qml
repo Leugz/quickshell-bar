@@ -1,9 +1,10 @@
+import "../"
 import QtQuick
 import Quickshell
-import "../"
 
 Text {
     id: root
+
     text: "󰐥"
     color: Theme.maroon
     font.family: Theme.fontFamilyAlt
@@ -15,4 +16,5 @@ Text {
         cursorShape: Qt.PointingHandCursor
         onClicked: globalPowerMenu.visible = true
     }
+
 }

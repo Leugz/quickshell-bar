@@ -1,144 +1,149 @@
+import "../"
+import "../components"
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import "../"
-import "../components"
 
 PopupWindow {
     id: root
-    
+
     property bool shown: false
     property date viewDate: new Date()
     property Item target: null
-    
     property alias isHovered: bg.hovered
-    
-    visible: shown || bg.opacity > 0
-    color: "transparent"
-    implicitWidth: bg.width
-    implicitHeight: bg.implicitHeight
-    
-    anchor {
-        item: root.target
-        edges: Edges.Bottom
-        gravity: Edges.Bottom 
-        margins.top: 6
-    }
+    property var days: buildGrid()
 
     function buildGrid() {
         const y = viewDate.getFullYear();
         const m = viewDate.getMonth();
         const firstDay = new Date(y, m, 1);
-        const startDow = firstDay.getDay(); 
-        
+        const startDow = firstDay.getDay();
         let daysArr = [];
         const today = new Date();
-        
         const prevMonthTotal = new Date(y, m, 0).getDate();
         for (let i = startDow - 1; i >= 0; i--) {
             daysArr.push({
-                dayText: String(prevMonthTotal - i),
-                isCurrentMonth: false,
-                isToday: false
+                "dayText": String(prevMonthTotal - i),
+                "isCurrentMonth": false,
+                "isToday": false
             });
         }
-        
         const totalDays = new Date(y, m + 1, 0).getDate();
         for (let i = 1; i <= totalDays; i++) {
             const isT = y === today.getFullYear() && m === today.getMonth() && i === today.getDate();
             daysArr.push({
-                dayText: String(i),
-                isCurrentMonth: true,
-                isToday: isT
+                "dayText": String(i),
+                "isCurrentMonth": true,
+                "isToday": isT
             });
         }
-        
         let nextDayNum = 1;
-        while (daysArr.length < 42) {
+        while (daysArr.length < 42)
             daysArr.push({
-                dayText: String(nextDayNum++),
-                isCurrentMonth: false,
-                isToday: false
+                "dayText": String(nextDayNum++),
+                "isCurrentMonth": false,
+                "isToday": false
             });
-        }
-        
+
         return daysArr;
     }
-    
-    property var days: buildGrid()
+
+    visible: shown || bg.opacity > 0
+    color: "transparent"
+    implicitWidth: bg.width
+    implicitHeight: bg.implicitHeight
     onViewDateChanged: days = buildGrid()
+
+    anchor {
+        item: root.target
+        edges: Edges.Bottom
+        gravity: Edges.Bottom
+        margins.top: 6
+    }
 
     GlassPanel {
         id: bg
+
         width: mainCol.implicitWidth + 24
         radius: Theme.moduleRadius + 4
         clip: true
-
         implicitHeight: root.shown ? mainCol.implicitHeight + 24 : 1
-        opacity: root.shown ? 1.0 : 0.0
-
-        Behavior on opacity { NumberAnimation { duration: 150 } }
-        Behavior on implicitHeight { NumberAnimation { duration: 300; easing.type: Easing.OutExpo } }
+        opacity: root.shown ? 1 : 0
 
         WheelHandler {
-            onWheel: event => {
+            onWheel: (event) => {
                 const d = root.viewDate;
                 const delta = event.angleDelta.y > 0 ? -1 : 1;
                 root.viewDate = new Date(d.getFullYear(), d.getMonth() + delta, 1);
             }
         }
-        
+
         ColumnLayout {
             id: mainCol
+
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.margins: 12
-            spacing: 12 
+            spacing: 12
 
             RowLayout {
                 Layout.fillWidth: true
-                
+
                 Row {
                     spacing: 4
+
                     Text {
                         text: Qt.formatDateTime(root.viewDate, "MMMM")
                         color: Theme.text
                         font.family: Theme.fontFamily
-                        font.pixelSize: 14 
+                        font.pixelSize: 14
                         font.bold: true
                     }
+
                     Text {
                         text: Qt.formatDateTime(root.viewDate, "yyyy")
                         color: Theme.indigo
                         font.family: Theme.fontFamily
-                        font.pixelSize: 14 
+                        font.pixelSize: 14
                         font.bold: true
                     }
+
                 }
 
-                Item { Layout.fillWidth: true } 
+                Item {
+                    Layout.fillWidth: true
+                }
 
                 Row {
                     spacing: 10
-                    
+
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "❮" 
+                        text: "❮"
                         color: prevMouse.containsMouse ? Theme.mauve : Theme.unactive
                         font.family: Theme.fontFamily
                         font.pixelSize: 12
                         font.bold: true
-                        Behavior on color { ColorAnimation { duration: 150 } }
+
                         MouseArea {
                             id: prevMouse
+
                             anchors.fill: parent
                             anchors.margins: -6
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onClicked: root.viewDate = new Date(root.viewDate.getFullYear(), root.viewDate.getMonth() - 1, 1)
                         }
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 150
+                            }
+
+                        }
+
                     }
-                    
+
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
                         text: "TODAY"
@@ -146,15 +151,24 @@ PopupWindow {
                         font.family: Theme.fontFamily
                         font.pixelSize: 10
                         font.bold: true
-                        Behavior on color { ColorAnimation { duration: 150 } }
+
                         MouseArea {
                             id: todayMouse
+
                             anchors.fill: parent
                             anchors.margins: -6
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onClicked: root.viewDate = new Date()
                         }
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 150
+                            }
+
+                        }
+
                     }
 
                     Text {
@@ -164,26 +178,38 @@ PopupWindow {
                         font.family: Theme.fontFamily
                         font.pixelSize: 12
                         font.bold: true
-                        Behavior on color { ColorAnimation { duration: 150 } }
+
                         MouseArea {
                             id: nextMouse
+
                             anchors.fill: parent
                             anchors.margins: -6
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onClicked: root.viewDate = new Date(root.viewDate.getFullYear(), root.viewDate.getMonth() + 1, 1)
                         }
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 150
+                            }
+
+                        }
+
                     }
+
                 }
+
             }
 
             GridLayout {
                 columns: 7
-                columnSpacing: 10 
-                rowSpacing: 4     
-                
+                columnSpacing: 10
+                rowSpacing: 4
+
                 Repeater {
                     model: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
+
                     delegate: Text {
                         text: modelData
                         color: index === new Date().getDay() ? Theme.maroon : Theme.cyan
@@ -192,14 +218,16 @@ PopupWindow {
                         font.bold: true
                         Layout.alignment: Qt.AlignHCenter
                     }
+
                 }
-                
+
                 Repeater {
                     model: root.days
+
                     delegate: Item {
-                        implicitWidth: 18 
-                        implicitHeight: 18 
-                        
+                        implicitWidth: 18
+                        implicitHeight: 18
+
                         Text {
                             anchors.centerIn: parent
                             text: modelData.dayText
@@ -207,14 +235,39 @@ PopupWindow {
                             font.pixelSize: 12
                             font.bold: modelData.isCurrentMonth
                             color: {
-                                if (modelData.isToday) return Theme.mauve; 
-                                if (modelData.isCurrentMonth) return Theme.text;
-                                return Theme.surface2; 
+                                if (modelData.isToday)
+                                    return Theme.mauve;
+
+                                if (modelData.isCurrentMonth)
+                                    return Theme.text;
+
+                                return Theme.surface2;
                             }
                         }
+
                     }
+
                 }
+
             }
+
         }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 150
+            }
+
+        }
+
+        Behavior on implicitHeight {
+            NumberAnimation {
+                duration: 300
+                easing.type: Easing.OutExpo
+            }
+
+        }
+
     }
+
 }

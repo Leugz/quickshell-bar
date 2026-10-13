@@ -1,15 +1,15 @@
-import QtQuick
-import QtQuick.Layouts
-import Quickshell
 import "../"
 import "../components"
 import "../services"
+import QtQuick
+import QtQuick.Layouts
+import Quickshell
 
 PopupWindow {
     id: root
+
     property bool shown: false
     property Item target: null
-
     property alias isHovered: bg.hovered
 
     visible: shown || bg.implicitHeight > 0
@@ -26,18 +26,16 @@ PopupWindow {
 
     GlassPanel {
         id: bg
+
         width: 280
         radius: Theme.moduleRadius + 4
         clip: true
-
         implicitHeight: root.shown ? mainCol.implicitHeight + 24 : 1
-        opacity: root.shown ? 1.0 : 0.0
-
-        Behavior on opacity { NumberAnimation { duration: 150 } }
-        Behavior on implicitHeight { NumberAnimation { duration: 400; easing.type: Easing.OutQuart } }
+        opacity: root.shown ? 1 : 0
 
         ColumnLayout {
             id: mainCol
+
             anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.margins: 12
@@ -53,13 +51,14 @@ PopupWindow {
                     color: Audio.muted ? Theme.indigo : Theme.text
                     font.family: Theme.fontFamilyAlt
                     font.pixelSize: 18
-                    
-                    MouseArea { 
+
+                    MouseArea {
                         anchors.fill: parent
                         anchors.margins: -4
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: Audio.toggleMute() 
+                        onClicked: Audio.toggleMute()
                     }
+
                 }
 
                 Item {
@@ -68,6 +67,7 @@ PopupWindow {
 
                     Rectangle {
                         id: track
+
                         width: parent.width
                         height: 6
                         radius: 3
@@ -79,20 +79,34 @@ PopupWindow {
                             height: parent.height
                             radius: 3
                             color: Theme.mauve
-                            Behavior on width { NumberAnimation { duration: 100; easing.type: Easing.OutQuad } }
+
+                            Behavior on width {
+                                NumberAnimation {
+                                    duration: 100
+                                    easing.type: Easing.OutQuad
+                                }
+
+                            }
+
                         }
+
                     }
 
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
-                        onPressed: mouse => Audio.setVolume(mouse.x / width)
-                        onPositionChanged: mouse => { 
-                            if (pressed) Audio.setVolume(Math.max(0, Math.min(1, mouse.x / width))) 
+                        onPressed: (mouse) => {
+                            return Audio.setVolume(mouse.x / width);
+                        }
+                        onPositionChanged: (mouse) => {
+                            if (pressed)
+                                Audio.setVolume(Math.max(0, Math.min(1, mouse.x / width)));
+
                         }
                     }
+
                 }
-                
+
                 Text {
                     text: Math.round(Audio.volume * 100) + "%"
                     color: Theme.text
@@ -102,6 +116,7 @@ PopupWindow {
                     Layout.preferredWidth: 32
                     horizontalAlignment: Text.AlignRight
                 }
+
             }
 
             ColumnLayout {
@@ -110,30 +125,29 @@ PopupWindow {
 
                 Repeater {
                     model: Audio.sinks
+
                     delegate: Rectangle {
                         required property var modelData
+
                         Layout.fillWidth: true
                         Layout.preferredHeight: 32
                         radius: 6
-                        
                         color: modelData === Audio.sink ? Qt.alpha(Theme.indigo, 0.2) : (sinkMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.05) : "transparent")
                         border.color: modelData === Audio.sink ? Qt.alpha(Theme.indigo, 0.4) : "transparent"
                         border.width: 1
-                        
-                        Behavior on color { ColorAnimation { duration: 150 } }
 
                         RowLayout {
                             anchors.fill: parent
                             anchors.margins: 8
                             spacing: 10
-                            
+
                             Text {
-                                text: "󰋎" 
+                                text: "󰋎"
                                 color: modelData === Audio.sink ? Theme.indigo : Theme.unactive
                                 font.family: Theme.fontFamilyAlt
                                 font.pixelSize: 14
                             }
-                            
+
                             Text {
                                 Layout.fillWidth: true
                                 text: modelData.description || modelData.name
@@ -142,18 +156,48 @@ PopupWindow {
                                 font.pixelSize: 12
                                 elide: Text.ElideRight
                             }
+
                         }
 
-                        MouseArea { 
+                        MouseArea {
                             id: sinkMouse
+
                             anchors.fill: parent
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: Audio.setSink(modelData) 
+                            onClicked: Audio.setSink(modelData)
                         }
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 150
+                            }
+
+                        }
+
                     }
+
                 }
+
             }
+
         }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 150
+            }
+
+        }
+
+        Behavior on implicitHeight {
+            NumberAnimation {
+                duration: 400
+                easing.type: Easing.OutQuart
+            }
+
+        }
+
     }
+
 }

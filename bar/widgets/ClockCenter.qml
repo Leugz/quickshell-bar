@@ -1,11 +1,11 @@
 import "../"
 import "../services"
-
 import QtQuick
 import QtQuick.Layouts
 
 RowLayout {
     id: root
+
     spacing: 4
 
     Text {
@@ -22,4 +22,5 @@ RowLayout {
         font.pixelSize: Theme.fontSize
         font.bold: true
     }
+
 }

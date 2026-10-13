@@ -1,10 +1,10 @@
+import "../"
+import "../components"
 import QtQuick
 import QtQuick.Effects
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Mpris
-import "../"
-import "../components"
 
 PopupWindow {
     id: root
@@ -12,13 +12,13 @@ PopupWindow {
     property bool shown: false
     property Item target: null
     property var activePlayer: null
-    
     property alias isHovered: bg.hovered
+
     visible: shown || bg.opacity > 0
     color: "transparent"
     implicitWidth: bg.width
     implicitHeight: bg.height
-    
+
     anchor {
         item: root.target
         edges: Edges.Bottom
@@ -28,17 +28,14 @@ PopupWindow {
 
     GlassPanel {
         id: bg
+
         width: 350
         height: 115
         radius: Theme.moduleRadius + 4
         clip: true
-
-        opacity: root.shown && root.activePlayer ? 1.0 : 0.0
-        scale: root.shown && root.activePlayer ? 1.0 : 0.95
+        opacity: root.shown && root.activePlayer ? 1 : 0
+        scale: root.shown && root.activePlayer ? 1 : 0.95
         transformOrigin: Item.Top
-
-        Behavior on opacity { NumberAnimation { duration: 150 } }
-        Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
 
         Item {
             anchors.fill: parent
@@ -46,6 +43,7 @@ PopupWindow {
 
             Rectangle {
                 id: cover
+
                 width: 85
                 height: 85
                 anchors.left: parent.left
@@ -55,7 +53,7 @@ PopupWindow {
                 color: Qt.rgba(1, 1, 1, 0.05)
                 border.color: Qt.rgba(1, 1, 1, 0.1)
                 border.width: 1
-                
+
                 Text {
                     anchors.centerIn: parent
                     text: ""
@@ -64,50 +62,59 @@ PopupWindow {
                     color: Qt.rgba(1, 1, 1, 0.2)
                     visible: coverArtImg.status !== Image.Ready
                 }
-                
+
                 Image {
                     id: coverArtImg
+
+                    property string lastGoodSource: ""
+
                     anchors.fill: parent
                     cache: false
                     fillMode: Image.PreserveAspectCrop
                     asynchronous: true
-                    property string lastGoodSource: ""
                     source: lastGoodSource
                     layer.enabled: true
+
                     layer.effect: MultiEffect {
                         maskEnabled: true
                         maskSource: coverMask
                     }
+
                 }
-                
-                Rectangle { 
+
+                Rectangle {
                     id: coverMask
+
                     anchors.fill: coverArtImg
                     radius: 8
                     layer.enabled: true
                     visible: false
                 }
-                
+
                 Connections {
-                    target: root.activePlayer
                     function onTrackArtUrlChanged() {
                         const raw = root.activePlayer ? root.activePlayer.trackArtUrl : "";
-                        if (raw) {
+                        if (raw)
                             coverArtImg.lastGoodSource = raw.startsWith("/") ? ("file://" + raw) : raw;
-                        }
+
                     }
+
+                    target: root.activePlayer
                 }
-                
+
                 Connections {
-                    target: root
                     function onActivePlayerChanged() {
-                        if (!root.activePlayer) coverArtImg.lastGoodSource = "";
-                        else if (root.activePlayer.trackArtUrl) {
+                        if (!root.activePlayer) {
+                            coverArtImg.lastGoodSource = "";
+                        } else if (root.activePlayer.trackArtUrl) {
                             const raw = root.activePlayer.trackArtUrl;
                             coverArtImg.lastGoodSource = raw.startsWith("/") ? ("file://" + raw) : raw;
                         }
                     }
+
+                    target: root
                 }
+
             }
 
             Item {
@@ -119,32 +126,42 @@ PopupWindow {
 
                 Item {
                     id: closeBtn
+
                     anchors.top: parent.top
                     anchors.right: parent.right
-                    width: 24 
+                    width: 24
                     height: 24
                     z: 100
-                    
+
                     Text {
                         anchors.centerIn: parent
                         text: ""
                         color: closeMouse.containsMouse ? Theme.text : Theme.unactive
                         font.pixelSize: 14
-                        Behavior on color { ColorAnimation { duration: 150 } }
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 150
+                            }
+
+                        }
+
                     }
-                    
+
                     MouseArea {
                         id: closeMouse
+
                         anchors.fill: parent
-                        anchors.margins: -8 
+                        anchors.margins: -8
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
-                            if (root.target) {
+                            if (root.target)
                                 root.target.popupOpen = false;
-                            }
+
                         }
                     }
+
                 }
 
                 Item {
@@ -153,81 +170,113 @@ PopupWindow {
                     width: appContent.implicitWidth
                     height: appContent.implicitHeight
                     z: 100
-                    
+
                     Row {
                         id: appContent
+
                         anchors.centerIn: parent
                         spacing: 4
-                        
+
                         Image {
                             id: appIcon
+
                             anchors.verticalCenter: parent.verticalCenter
                             width: 20
                             height: 20
                             source: {
-                                if (!root.activePlayer || !root.activePlayer.desktopEntry) return "";
+                                if (!root.activePlayer || !root.activePlayer.desktopEntry)
+                                    return "";
+
                                 return Quickshell.iconPath(root.activePlayer.desktopEntry, true);
                             }
-                            visible: source.toString() !== "" && status === Image.Ready 
+                            visible: source.toString() !== "" && status === Image.Ready
                         }
-                        
+
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
                             text: {
-                                if (!root.activePlayer) return "";
-                                if (root.activePlayer.identity) return root.activePlayer.identity;
-                                if (root.activePlayer.desktopEntry) return root.activePlayer.desktopEntry;
+                                if (!root.activePlayer)
+                                    return "";
+
+                                if (root.activePlayer.identity)
+                                    return root.activePlayer.identity;
+
+                                if (root.activePlayer.desktopEntry)
+                                    return root.activePlayer.desktopEntry;
+
                                 const svc = root.activePlayer.dbusName || "";
                                 const match = svc.match(/^org\.mpris\.MediaPlayer2\.([^.]+)/);
-                                if (match) return match[1];
+                                if (match)
+                                    return match[1];
+
                                 return "Unknown source";
                             }
-                            color: focusMouse.containsMouse ? Theme.cyan : Qt.rgba(1, 1, 1, 0.5) 
+                            color: focusMouse.containsMouse ? Theme.cyan : Qt.rgba(1, 1, 1, 0.5)
                             font.family: Theme.fontFamily
                             font.pixelSize: 11
                             font.bold: true
-                            visible: !appIcon.visible 
-                            
-                            Behavior on color { ColorAnimation { duration: 150 } }
+                            visible: !appIcon.visible
+
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 150
+                                }
+
+                            }
+
                         }
+
                     }
 
                     MouseArea {
                         id: focusMouse
+
                         anchors.fill: parent
                         anchors.margins: -6
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: if (root.activePlayer) focusProc.running = true
+                        onClicked: {
+                            if (root.activePlayer) {
+                                focusProc.running = true;
+                            }
+                        }
                     }
+
                 }
 
                 Process {
                     id: focusProc
+
                     command: ["hyprctl", "clients", "-j"]
+
                     stdout: StdioCollector {
                         onStreamFinished: {
                             try {
                                 const needle = (root.activePlayer.desktopEntry || root.activePlayer.identity || "").toLowerCase();
-                                if (!needle) return;
-                                const match = JSON.parse(text).find(c =>
-                                    c.class.toLowerCase().includes(needle) || c.title.toLowerCase().includes(needle)
-                                );
+                                if (!needle)
+                                    return ;
+
+                                const match = JSON.parse(text).find((c) => {
+                                    return c.class.toLowerCase().includes(needle) || c.title.toLowerCase().includes(needle);
+                                });
                                 if (match) {
                                     Quickshell.execDetached(["hyprctl", "dispatch", "focuswindow", "address:" + match.address]);
-                                    if (root.target) root.target.popupOpen = false;
+                                    if (root.target)
+                                        root.target.popupOpen = false;
+
                                 }
                             } catch (e) {
                                 console.log("focus lookup failed:", e);
                             }
                         }
                     }
+
                 }
 
                 Column {
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    anchors.rightMargin: 24 
+                    anchors.rightMargin: 24
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 4
 
@@ -241,40 +290,55 @@ PopupWindow {
                         horizontalAlignment: Text.AlignHCenter
                         elide: Text.ElideRight
                     }
-                    
+
                     Text {
                         width: parent.width
                         text: root.activePlayer ? (root.activePlayer.trackArtist || "") : ""
-                        color: Qt.rgba(1, 1, 1, 0.7) 
+                        color: Qt.rgba(1, 1, 1, 0.7)
                         font.family: Theme.fontFamily
                         font.pixelSize: 13
                         horizontalAlignment: Text.AlignHCenter
                         elide: Text.ElideRight
                     }
 
-                    Item { width: 1; height: 4 } 
+                    Item {
+                        width: 1
+                        height: 4
+                    }
 
                     Row {
                         anchors.horizontalCenter: parent.horizontalCenter
                         spacing: 20
-                        
+
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
-                            text: "󰒮" 
+                            text: "󰒮"
                             color: prevMouse.containsMouse ? Theme.text : Theme.unactive
                             font.family: Theme.fontFamilyAlt
                             font.pixelSize: 22
-                            Behavior on color { ColorAnimation { duration: 150 } }
-                            
+
                             MouseArea {
                                 id: prevMouse
+
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
-                                onClicked: if (root.activePlayer) root.activePlayer.previous()
+                                onClicked: {
+                                    if (root.activePlayer) {
+                                        root.activePlayer.previous();
+                                    }
+                                }
                             }
+
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 150
+                                }
+
+                            }
+
                         }
-                        
+
                         Rectangle {
                             width: 36
                             height: 36
@@ -282,44 +346,96 @@ PopupWindow {
                             color: playMouse.containsMouse ? Qt.rgba(Theme.indigo.r, Theme.indigo.g, Theme.indigo.b, 0.4) : Qt.rgba(1, 1, 1, 0.1)
                             border.color: playMouse.containsMouse ? Theme.indigo : Qt.rgba(1, 1, 1, 0.2)
                             border.width: 1
-                            Behavior on color { ColorAnimation { duration: 150 } }
-                            Behavior on border.color { ColorAnimation { duration: 150 } }
 
                             Text {
                                 anchors.centerIn: parent
                                 text: root.activePlayer && root.activePlayer.isPlaying ? "󰏤" : "󰐊"
-                                color: Theme.text 
+                                color: Theme.text
                                 font.family: Theme.fontFamilyAlt
                                 font.pixelSize: 20
                             }
+
                             MouseArea {
                                 id: playMouse
+
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
-                                onClicked: if (root.activePlayer) root.activePlayer.togglePlaying()
+                                onClicked: {
+                                    if (root.activePlayer) {
+                                        root.activePlayer.togglePlaying();
+                                    }
+                                }
                             }
+
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 150
+                                }
+
+                            }
+
+                            Behavior on border.color {
+                                ColorAnimation {
+                                    duration: 150
+                                }
+
+                            }
+
                         }
-                        
+
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
                             text: "󰒭"
                             color: nextMouse.containsMouse ? Theme.text : Theme.unactive
                             font.family: Theme.fontFamilyAlt
                             font.pixelSize: 22
-                            Behavior on color { ColorAnimation { duration: 150 } }
-                            
+
                             MouseArea {
                                 id: nextMouse
+
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
-                                onClicked: if (root.activePlayer) root.activePlayer.next()
+                                onClicked: {
+                                    if (root.activePlayer) {
+                                        root.activePlayer.next();
+                                    }
+                                }
                             }
+
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 150
+                                }
+
+                            }
+
                         }
+
                     }
+
                 }
+
             }
+
         }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 150
+            }
+
+        }
+
+        Behavior on scale {
+            NumberAnimation {
+                duration: 150
+                easing.type: Easing.OutCubic
+            }
+
+        }
+
     }
+
 }

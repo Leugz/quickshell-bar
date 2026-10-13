@@ -1,21 +1,22 @@
+import "../"
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.Notifications
-import "../"
 
 GlassPanel {
     id: root
+
     property var notification
-    
+
     width: 320
     implicitHeight: layout.implicitHeight + 24
-
     radius: Theme.moduleRadius
     clip: true
 
     RowLayout {
         id: layout
+
         anchors.fill: parent
         anchors.margins: 14
         spacing: 14
@@ -35,7 +36,7 @@ GlassPanel {
 
             RowLayout {
                 Layout.fillWidth: true
-                
+
                 Text {
                     Layout.fillWidth: true
                     text: root.notification ? (root.notification.summary || "Notification") : "Loading..."
@@ -45,25 +46,35 @@ GlassPanel {
                     font.bold: true
                     elide: Text.ElideRight
                 }
-                
+
                 Text {
                     text: ""
                     color: closeMouse.containsMouse ? Theme.text : Theme.unactive
                     font.pixelSize: 14
-                    
-                    Behavior on color { ColorAnimation { duration: 150 } }
-                    
+
                     MouseArea {
                         id: closeMouse
+
                         anchors.fill: parent
                         anchors.margins: -8
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
-                            if(root.notification) root.notification.dismiss()
+                            if (root.notification)
+                                root.notification.dismiss();
+
                         }
                     }
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 150
+                        }
+
+                    }
+
                 }
+
             }
 
             Text {
@@ -78,33 +89,34 @@ GlassPanel {
                 elide: Text.ElideRight
                 visible: text.length > 0
             }
+
         }
+
     }
 
     MouseArea {
         anchors.fill: parent
-        z: -1 
+        z: -1
         cursorShape: Qt.PointingHandCursor
         onClicked: {
-            if (!root.notification) return;
+            if (!root.notification)
+                return ;
 
             let defaultInvoked = false;
-            
             if (root.notification.actions) {
                 for (let i = 0; i < root.notification.actions.length; i++) {
                     let action = root.notification.actions[i];
-                    
                     if (action.identifier === "default") {
-                        action.invoke(); 
+                        action.invoke();
                         defaultInvoked = true;
                         break;
                     }
                 }
             }
-            
-            if (!defaultInvoked) {
+            if (!defaultInvoked)
                 root.notification.dismiss();
-            }
+
         }
     }
+
 }

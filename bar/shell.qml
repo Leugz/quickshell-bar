@@ -3,8 +3,8 @@ import QtQml
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Wayland
 import Quickshell.Services.Notifications
+import Quickshell.Wayland
 import "components"
 import "widgets"
 import "windows"
@@ -14,13 +14,13 @@ Scope {
 
     NotificationServer {
         id: notifServer
+
         persistenceSupported: true
         bodySupported: true
         actionsSupported: true
         imageSupported: true
-
-        onNotification: notification => {
-            notification.tracked = true
+        onNotification: (notification) => {
+            notification.tracked = true;
         }
     }
 
@@ -34,10 +34,12 @@ Scope {
 
         delegate: Scope {
             id: screenScope
+
             required property var modelData
 
             NotificationCenter {
                 id: notifCenter
+
                 server: notifServer
                 screen: screenScope.modelData
             }
@@ -50,13 +52,12 @@ Scope {
 
             PanelWindow {
                 id: bar
-                screen: screenScope.modelData
 
                 property var centers: centerInstantiator
                 property int screenIndex: index
 
+                screen: screenScope.modelData
                 WlrLayershell.namespace: "quickshell:bar"
-
                 anchors.top: true
                 anchors.left: true
                 anchors.right: true
@@ -69,16 +70,22 @@ Scope {
                     // ---- LEFT ----
                     BarGroup {
                         anchors {
-                            left: parent.left;
-                            leftMargin: 10;
-                            top: parent.top;
-                            topMargin: 5;
+                            left: parent.left
+                            leftMargin: 10
+                            top: parent.top
+                            topMargin: 5
                             bottom: parent.bottom
                         }
 
-                        LauncherButton {}
-                        Workspaces {}
-                        MprisWidget {}
+                        LauncherButton {
+                        }
+
+                        Workspaces {
+                        }
+
+                        MprisWidget {
+                        }
+
                     }
 
                     // ---- CENTER ----
@@ -90,33 +97,50 @@ Scope {
                             bottom: parent.bottom
                         }
 
-                        ClockCenter {}
+                        ClockCenter {
+                        }
+
                     }
 
                     // ---- RIGHT ----
                     BarGroup {
                         anchors {
-                            right: parent.right;
-                            rightMargin: 10;
-                            top: parent.top;
-                            topMargin: 5;
+                            right: parent.right
+                            rightMargin: 10
+                            top: parent.top
+                            topMargin: 5
                             bottom: parent.bottom
                         }
 
                         TrayWidget {
                             parentWindow: bar
                         }
-                        VolumeWidget {}
-                        NetworkWidget {}
-                        CalendarWidget {}
+
+                        VolumeWidget {
+                        }
+
+                        NetworkWidget {
+                        }
+
+                        CalendarWidget {
+                        }
+
                         NotificationWidget {
                             server: notifServer
                             center: notifCenter
                         }
-                        PowerButton {}
+
+                        PowerButton {
+                        }
+
                     }
+
                 }
+
             }
+
         }
+
     }
+
 }

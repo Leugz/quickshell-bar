@@ -1,7 +1,11 @@
-pragma Singleton
 import Quickshell
+pragma Singleton
 
 Singleton {
-    readonly property SystemClock clock: SystemClock { precision: SystemClock.Seconds }
+    readonly property SystemClock
+    clock: SystemClock {
+        precision: SystemClock.Seconds
+    }
+
     readonly property date now: clock.date
 }

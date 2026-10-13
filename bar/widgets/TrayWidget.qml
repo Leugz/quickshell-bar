@@ -1,37 +1,36 @@
+import "../"
 import QtQuick
 import Quickshell
-import Quickshell.Widgets
 import Quickshell.Services.SystemTray
-import "../"
+import Quickshell.Widgets
 
 Row {
     id: root
-    spacing: 0 
-    
-    property var parentWindow
 
+    property var parentWindow
     property bool isPinned: false
     property bool isHovered: hoverHandler.hovered
     property bool isOpen: isPinned || isHovered
-    
     property bool hasDrawer: trayRepeater.count > Config.trayThreshold
 
-    HoverHandler { id: hoverHandler }
+    spacing: 0
+
+    HoverHandler {
+        id: hoverHandler
+    }
 
     Item {
         id: arrowContainer
+
         visible: root.hasDrawer
         width: root.hasDrawer ? 24 : 0
         height: 18
         clip: true
         opacity: root.hasDrawer ? 1 : 0
 
-        Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.OutExpo } }
-        Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutExpo } }
-
         Text {
             anchors.centerIn: parent
-            text: root.isPinned ? "󱅛" : (root.isOpen ? "" : "") 
+            text: root.isPinned ? "󱅛" : (root.isOpen ? "" : "")
             color: root.isPinned ? Theme.mauve : Theme.text
             font.family: Theme.fontFamilyAlt
             font.pixelSize: 18
@@ -42,18 +41,35 @@ Row {
             cursorShape: Qt.PointingHandCursor
             onClicked: root.isPinned = !root.isPinned
         }
+
+        Behavior on width {
+            NumberAnimation {
+                duration: 250
+                easing.type: Easing.OutExpo
+            }
+
+        }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 250
+                easing.type: Easing.OutExpo
+            }
+
+        }
+
     }
 
     Repeater {
         id: trayRepeater
+
         model: SystemTray.items
 
         delegate: Item {
             id: trayItemWrapper
-            required property SystemTrayItem modelData
 
+            required property SystemTrayItem modelData
             property bool isValid: !Config.trayHiddenIds.includes(modelData.id)
-            
             property bool shouldShow: isValid && (!root.hasDrawer || root.isOpen)
 
             width: shouldShow ? 28 : 0
@@ -61,22 +77,20 @@ Row {
             clip: true
             opacity: shouldShow ? 1 : 0
 
-            Behavior on width { NumberAnimation { duration: 250; easing.type: Easing.OutExpo } }
-            Behavior on opacity { NumberAnimation { duration: 250; easing.type: Easing.OutExpo } }
-
             IconImage {
                 source: trayItemWrapper.modelData.icon
                 width: 18
                 height: 18
-                anchors.right: parent.right 
+                anchors.right: parent.right
             }
 
             MouseArea {
                 id: mouseArea
+
                 anchors.fill: parent
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 cursorShape: Qt.PointingHandCursor
-                onClicked: mouse => {
+                onClicked: (mouse) => {
                     if (mouse.button === Qt.LeftButton) {
                         trayItemWrapper.modelData.activate();
                     } else if (mouse.button === Qt.RightButton && trayItemWrapper.modelData.hasMenu) {
@@ -85,6 +99,25 @@ Row {
                     }
                 }
             }
+
+            Behavior on width {
+                NumberAnimation {
+                    duration: 250
+                    easing.type: Easing.OutExpo
+                }
+
+            }
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 250
+                    easing.type: Easing.OutExpo
+                }
+
+            }
+
         }
+
     }
+
 }

@@ -1,25 +1,29 @@
-pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+pragma Singleton
 
 Singleton {
     id: root
+
     property string state: "disconnected"
     property string connectionName: ""
 
-    function refresh() { 
-        if (!proc.running) proc.running = true; 
+    function refresh() {
+        if (!proc.running)
+            proc.running = true;
+
     }
 
     Process {
         id: proc
+
         running: false
         command: ["nmcli", "-t", "-f", "TYPE,STATE,CONNECTION", "device", "status"]
 
         stdout: StdioCollector {
             onStreamFinished: {
-                const line = text.split("\n").find(l => {
+                const line = text.split("\n").find((l) => {
                     const p = l.split(":");
                     return (p[0] === "wifi" || p[0] === "ethernet") && p[1] === "connected";
                 });
@@ -33,6 +37,7 @@ Singleton {
                 }
             }
         }
+
     }
 
     Timer {
@@ -42,4 +47,5 @@ Singleton {
         triggeredOnStart: true
         onTriggered: root.refresh()
     }
+
 }
